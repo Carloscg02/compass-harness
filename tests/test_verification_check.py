@@ -241,6 +241,13 @@ def test_cli_status_command_reports_healthy_and_specs_progress(
     assert "HEALTHY" in result.output
     assert "01-demo: 1/2 tareas completadas" in result.output
 
+    # Subdirectorios legacy en specs/ sin spec.md, plan.md ni tasks.md deben ignorarse
+    legacy_dir = initialized_project / "specs" / "F-01-legacy"
+    legacy_dir.mkdir(parents=True)
+    (legacy_dir / "notes.txt").write_text("legacy notes\n", encoding="utf-8")
+    result_after = runner.invoke(app, ["status", "--path", str(initialized_project)])
+    assert "F-01-legacy" not in result_after.output
+
 
 def test_cli_check_command_passes_on_healthy_project(
     initialized_project: Path,

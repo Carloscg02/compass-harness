@@ -57,13 +57,28 @@ IGNORED_DIRS: set[str] = {
     ".claude",
 }
 
-TRACKED_DIRS: tuple[str, ...] = ("src", "tests", "docs", "specs", "guides")
+TRACKED_DIRS: tuple[str, ...] = (
+    "src",
+    "backend",
+    "frontend",
+    "app",
+    "pkg",
+    "cmd",
+    "tests",
+    "docs",
+    "specs",
+    "guides",
+)
 
 HARNESS_MARKERS: tuple[str, ...] = (
     "AGENTS.md",
+    "agents.md",
     "CLAUDE.md",
+    "SDD-WoW.md",
+    "PRODUCT.md",
     ".compass",
     ".agents",
+    ".agent",
     ".claude",
     "docs/brain",
 )

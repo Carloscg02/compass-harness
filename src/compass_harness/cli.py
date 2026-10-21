@@ -122,7 +122,19 @@ def init(
             console.print("4. Estilo arquitectonico (--arch: hexagonal, layered, mvc, script)")
             console.print("5. Comandos de verificacion (--test-cmd, --lint-cmd, --e2e-cmd)")
             console.print("6. Asistentes objetivo (--assistants: antigravity, claude, cursor, codex)")
-            console.print(f"7. Inspecciona los directorios existentes ({', '.join(inspection.existing_dirs)}) y propone documentacion para docs/brain/modules/.")
+            console.print(
+                f"7. Inspecciona el codigo existente ({', '.join(inspection.existing_dirs)}) y documenta `docs/brain/modules/` "
+                "por SUBSISTEMAS FUNCIONALES / CAPACIDADES DE NEGOCIO (ej. auth, billing, extraction, valuation), "
+                "NUNCA por capas tecnicas horizontales (prohibido crear domain.md, adapters.md o application.md)."
+            )
+            if "DESIGN.md" in inspection.existing_design_files:
+                console.print(
+                    "8. Se detecto DESIGN.md previo: tras --apply, sintetiza sus Design Tokens y Typography en `docs/brain/design.md` (<= 80 lineas)."
+                )
+            if any(m in inspection.existing_harness_files for m in ("agents.md", "SDD-WoW.md", ".agent")):
+                console.print(
+                    "9. Se detectaron archivos de un arnes previo (ej. agents.md en minusculas o SDD-WoW.md): propon consolidarlos o eliminar duplicados para evitar conflicto con AGENTS.md."
+                )
         console.print("")
         console.print("Siguiente paso sugerido:")
         console.print(f'compass init --path "{root}" --name "{project_name}" --preview')

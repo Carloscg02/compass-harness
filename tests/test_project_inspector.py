@@ -98,12 +98,17 @@ def test_inspect_detects_existing_harness_files(tmp_path: Path) -> None:
     harness_proj = tmp_path / "harness_project"
     harness_proj.mkdir()
     (harness_proj / "AGENTS.md").write_text("# Agents configuration\n", encoding="utf-8")
+    (harness_proj / "agents.md").write_text("# Legacy agents\n", encoding="utf-8")
     (harness_proj / ".agents").mkdir()
     (harness_proj / ".compass").mkdir()
     (harness_proj / "docs" / "brain").mkdir(parents=True)
+    (harness_proj / "backend").mkdir()
+    (harness_proj / "frontend").mkdir()
 
     result = inspect_project(harness_proj)
-    assert result.existing_harness_files == ("AGENTS.md", ".compass", ".agents", "docs/brain")
+    assert result.existing_harness_files == ("AGENTS.md", "agents.md", ".compass", ".agents", "docs/brain")
+    assert "backend" in result.existing_dirs
+    assert "frontend" in result.existing_dirs
 
 
 def test_core_module_exports() -> None:

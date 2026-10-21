@@ -83,7 +83,15 @@ compass init --path . \
 ```
 
 - **Si el proyecto es `BROWNFIELD` (proyecto ya en marcha)**:
-  Inmediatamente después de ejecutar `compass init --apply`, inspecciona los módulos principales ya existentes en el repositorio, crea sus fichas de resumen en `docs/brain/modules/<modulo>.md` y enlázalas en la sección `## 3. Modulos del Sistema` de `docs/brain/index.md`.
+  Inmediatamente después de ejecutar `compass init --apply`, debes completar estos 3 pasos de consolidación:
+  1. **Módulos por Capacidades Verticales (NUNCA por Capas Técnicas)**:
+     - **PROHIBIDO** crear archivos en `docs/brain/modules/` por capas horizontales como `domain.md`, `application.md`, `adapters.md` o `api.md` (las capas horizontales ya están descritas en `docs/brain/architecture.md`).
+     - **OBLIGATORIO**: Analiza las subcarpetas de negocio, casos de uso, adaptadores especializados y rutas, y crea una ficha en `docs/brain/modules/<capacidad>.md` por cada **Subsistema Funcional o Capacidad de Negocio** (ej. `auth-and-security.md`, `tax-calculation-engine.md`, `invoice-ai-extraction.md`, `market-valuation.md`, `core-property-management.md`, `frontend-spa.md`).
+     - En cada ficha indica qué entidades/puertos de dominio, qué casos de uso, qué adaptadores concretos y qué endpoints/vistas componen ese corte vertical, y enlázalas en la sección `## 3. Modulos del Sistema` de `docs/brain/index.md`.
+  2. **Ingesta de `DESIGN.md` previo (si existe)**:
+     - Si el proyecto ya tiene un `DESIGN.md` en la raíz, sintetiza su dirección estética, Design Tokens y Typography en `docs/brain/design.md` (máximo 80 líneas) y enlázalo en `docs/brain/index.md` para que el contrato de UI quede activo.
+  3. **Limpieza de Arneses Legacy**:
+     - Si el inspector detectó un `agents.md` en minúsculas o archivos de flujos antiguos (`SDD-WoW.md`), rescata cualquier regla de negocio útil y elimina o archiva el `agents.md` en minúsculas tras confirmarlo con el usuario para no tener conflicto con `AGENTS.md`.
 - Por último, ejecuta la puerta de calidad para confirmar que el arnés ha quedado sano:
   ```bash
   compass check --path .

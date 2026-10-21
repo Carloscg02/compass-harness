@@ -296,6 +296,9 @@ def verify_harness(root: Path) -> HarnessReport:
                                     )
                                 )
 
+                if not (has_spec_md or has_plan_md or has_tasks_md):
+                    continue
+
                 specs_progress.append(
                     SpecProgress(
                         spec_id=spec_id,
