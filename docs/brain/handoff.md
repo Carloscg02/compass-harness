@@ -1,12 +1,14 @@
 # Estado y Relevo de Sesión (`handoff.md`)
 
 ## Estado Actual
-- **Fase Actual**: Roadmap v1.0 COMPLETADO (6 / 6 features implementadas y verificadas, incluyendo Gobernanza de UI/Frontend).
-- **Tests y Auditoría**: `51 passed` en `pytest` y `COMPASS_CHECK_PASSED` (19 tareas con Prueba Observada auditadas) al ejecutar `compass check` sobre `/home/carlos/compass-harness`.
+- **Fase Actual**: Roadmap v1.1 COMPLETADO (7 / 7 pasos implementados y verificados).
+- **Tests y Auditoría**: `52 passed` en `pytest` y `COMPASS_CHECK_PASSED` (22 tareas con Prueba Observada auditadas) con `compass check`.
 
 ## Qué se hizo en este turno
-1. Especificación, planificación e implementación TDD de `06-ui-design-governance` (detección de señales de UI en `inspector.py`, 5.ª skill `.compass/skills/ui-design/SKILL.md`, UI Gate en `AGENTS.md` y auditoría de `docs/brain/design.md` en `verifier.py`).
-2. Creación de la ficha [`docs/brain/modules/ui-design-governance.md`](modules/ui-design-governance.md) y la guía [`guides/06-ui-design-governance-GUIDE.md`](../../guides/06-ui-design-governance-GUIDE.md).
+1. Especificación y planificación formal de `07-auditor-subagent` (Puerta de Auditoría Independiente).
+2. TDD con subagente constructor (`flash`): actualización de `render_agents_md`, `render_sdd_workflow_skill` y tests en `test_templates_and_skills.py`.
+3. Auditoría adversarial independiente con subagente auditor (`flash` con contexto limpio y rúbrica de 4 puntos) con veredicto `APPROVED`.
+4. Consolidación del Cerebro: ficha [`docs/brain/modules/auditor-subagent.md`](modules/auditor-subagent.md), actualización de [`docs/brain/index.md`](index.md) y redacción de [`guides/07-auditor-subagent-GUIDE.md`](../../guides/07-auditor-subagent-GUIDE.md).
 
 ## Siguiente Paso Exacto
-- El paquete `compass-harness v0.1.0` está completo con sus 6 módulos y listo para uso en producción en proyectos backend, frontend o full-stack.
+- El arnés cuenta con la tríada completa (Orquestador, Builder, Auditor) lista para aplicar en cualquier proyecto con `compass init`.

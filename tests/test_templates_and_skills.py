@@ -78,6 +78,9 @@ def test_agents_md_structure_and_model_strategies() -> None:
     assert ".compass/skills/mentor-guide" in agents_fast
     assert "subagente" in agents_fast.lower() or "subagent" in agents_fast.lower()
     assert "fast" in agents_fast.lower() or "flash" in agents_fast.lower()
+    assert "builder" in agents_fast.lower()
+    assert "auditor" in agents_fast.lower()
+    assert "audit" in agents_fast.lower()
 
     cfg_single = ProjectConfig(
         project_name="my-service",
@@ -224,6 +227,34 @@ def test_sdd_workflow_skill_content() -> None:
     assert "Observed Proof" in sdd_md or "Prueba Observada" in sdd_md
     assert "Playwright" in sdd_md or "E2E" in sdd_md
     assert "flash" in sdd_md or "fast tier" in sdd_md
+
+
+def test_sdd_workflow_skill_includes_auditor_gate_and_rubric() -> None:
+    config = ProjectConfig(
+        project_name="audit-demo",
+        project_goal="Validar puerta de auditoria",
+        tech_stack="python",
+        test_command="pytest",
+        lint_command="ruff check",
+    )
+    bundle = render_project_bundle(config)
+    sdd_md = bundle[".compass/skills/sdd-workflow/SKILL.md"]
+
+    # Puerta de Auditoria y Rol
+    assert "Auditor Subagent" in sdd_md
+    assert "contexto limpio" in sdd_md.lower() or "clean context" in sdd_md.lower()
+
+    # Rubrica de 4 Puntos
+    assert "Rubrica de 4 Puntos" in sdd_md or "4-point" in sdd_md.lower()
+    assert "Criterios de Aceptacion" in sdd_md or "CA-" in sdd_md
+    assert "Ejecucion Determinista" in sdd_md or config.test_command in sdd_md
+    assert "Anti-Patrones" in sdd_md or "anti-patrones" in sdd_md.lower()
+    assert "VERDICT: APPROVED" in sdd_md
+    assert "VERDICT: REJECTED" in sdd_md
+
+    # Feedback loop: el auditor no edita codigo
+    assert "no edita codigo" in sdd_md.lower() or "no modifica codigo" in sdd_md.lower()
+
 
 
 def test_mentor_guide_skill_injects_domain() -> None:

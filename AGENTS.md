@@ -15,20 +15,24 @@ At the start of **every response**, your first line MUST declare which lane you 
   2. `specs/<feature-id>/plan.md` (Technical design validated against `docs/brain/architecture.md`, test plan, and ADR check)
   3. `specs/<feature-id>/tasks.md` (Small tasks ready for TDD)
   4. **TDD Implementation** (Delegated to an isolated Builder Subagent running `RED -> GREEN -> REFACTOR` with real **Observed Proof** from `pytest`)
-  5. **Brain Consolidation** (`docs/brain/index.md`, `docs/brain/modules/`, `docs/brain/handoff.md`) + **On-Demand Learning Guide** (`guides/<feature-id>-GUIDE.md`).
+  5. **Independent Audit Gate** (Delegated to an isolated Auditor Subagent with clean context running the 4-point Rubric)
+  6. **Brain Consolidation** (`docs/brain/index.md`, `docs/brain/modules/`, `docs/brain/handoff.md`) + **On-Demand Learning Guide** (`guides/<feature-id>-GUIDE.md`).
 
 ---
 
 ## 2. Subagent Delegation & Model Strategy
 
-To maximize autonomy, save quota on reasoning models, and keep the main conversation context clean of terminal/test noise, work is split into two roles without requiring manual configuration changes:
+To maximize autonomy, save quota on reasoning models, and keep the main conversation context clean of terminal/test noise, work is split into three roles without requiring manual configuration changes:
 
 1. **Main Agent (Orchestrator, Architect & Mentor)**:
    - Uses whatever model is currently active in the user's chat session.
-   - Responsible for: Onboarding, `spec.md`, `plan.md`, `tasks.md`, verifying results, updating `docs/brain/`, and writing `guides/`.
+   - Responsible for: Onboarding, `spec.md`, `plan.md`, `tasks.md`, managing subagents, updating `docs/brain/`, and writing `guides/`.
 2. **Builder Subagent (Isolated TDD Executor)**:
    - Once `tasks.md` is approved, the Main Agent delegates the implementation loop by invoking a subagent (`self`) with `Model="flash"` (in Antigravity, or the configured builder tier in `.compass/config`).
    - The subagent reads only `docs/brain/index.md`, `docs/brain/architecture.md`, `plan.md`, and `tasks.md`, executes the `RED -> GREEN -> REFACTOR` cycle in its own isolated context window, records the Observed Proof, and returns a concise summary to the Main Agent.
+3. **Auditor Subagent (Clean-Context Adversarial Auditor)**:
+   - Once implementation is complete, the Main Agent invokes an ephemeral subagent (`self`) with `Model="flash"` and clean context (reads `spec.md`, `plan.md`, and `git diff`).
+   - Strictly read-only (does not edit code). Evaluates the 4-point Rubric and returns a structured `VERDICT: APPROVED` or `VERDICT: REJECTED` to prevent builder blindness.
 
 ---
 

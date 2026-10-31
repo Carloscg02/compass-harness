@@ -10,14 +10,15 @@ def render_agents_md(config: "ProjectConfig") -> str:
     """Genera AGENTS.md garantizando menos de 100 lineas y enrutamiento agnostico."""
     if config.model_strategy == "subagent-fast":
         strategy_desc = (
-            "Delegacion en Subagentes Ligeros (`subagent-fast`): Delega tareas de "
-            "exploracion y construccion TDD en subagentes con modelo rapido (`flash` / fast tier) "
-            "para mantener el contexto principal limpio."
+            "Delegacion en Subagentes Ligeros (`subagent-fast`) - Triada de roles:\n"
+            "  1. Main Agent (Orquestador / Arquitecto / Mentor): Contexto principal y coordinacion.\n"
+            "  2. Builder Subagent (Constructor TDD): Modelo rapido (`flash` / fast tier) para el ciclo RED-GREEN-REFACTOR.\n"
+            "  3. Auditor Subagent (Auditor Adversarial): Modelo rapido (`flash`) con contexto limpio para la puerta de auditoria."
         )
     elif config.model_strategy == "subagent-inherit":
         strategy_desc = (
-            "Delegacion en Subagentes (`subagent-inherit`): Delega tareas pesadas en subagentes "
-            "utilizando el modelo heredado (`inherit`)."
+            "Delegacion en Subagentes (`subagent-inherit`): Delega tareas de construccion (Builder) "
+            "y auditoria (Auditor) en subagentes con modelo heredado (`inherit`)."
         )
     else:
         strategy_desc = (
@@ -40,7 +41,7 @@ def render_agents_md(config: "ProjectConfig") -> str:
 ## 2. Decisor de Carriles de Ejecucion
 - Carril 1: `ANSWER` - Preguntas de orientacion, explicaciones y diseno conceptual sin edicion de ficheros.
 - Carril 2: `FTD` (Fix-The-Docs) - Correcciones directas en documentacion, arquitectura o handoff sin codigo de produccion.
-- Carril 3: `SDD` (Spec-Driven Development) - Desarrollo de features o refactors guiado por especificacion formal (`spec.md` -> `plan.md` -> `tasks.md` -> TDD estricto).
+- Carril 3: `SDD` (Spec-Driven Development) - Flujo formal en 6 pasos: `spec.md` -> `plan.md` -> `tasks.md` -> `TDD Implementation` (Builder) -> `Independent Audit Gate` (Auditor) -> `Brain Consolidation & Guide` (Main).
 
 ---
 
