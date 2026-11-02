@@ -1,8 +1,89 @@
-# Compass Harness (`compass-harness`)
+<p align="center">
+  <img src="docs/assets/Compass-harness-banner-v1.jpg" alt="Compass Harness Banner" width="750">
+</p>
 
-Meta-Harness agnóstico, ligero y educativo en Python para ingeniería de software asistida por agentes de IA (Antigravity, Claude Code, Cursor, Codex).
+<h1 align="center">Compass Harness</h1>
 
-Proporciona memoria persistente jerárquica (`docs/brain/`), enrutamiento por carriles (`ANSWER`, `FTD`, `SDD`), TDD estricto en costuras públicas (*Seams* de Matt Pocock), gobernanza de UI/Frontend contra el *AI Slop* y generación de guías didácticas bajo demanda (`GUIDE.md`).
+<p align="center">
+  <em>Meta-harness desarrollado en Python para guiar el desarrollo con agentes y mantener el control del proyecto.</em>
+</p>
+
+<p align="center">
+  <a href="#por-qué-compass-harness">¿Por qué Compass?</a> •
+  <a href="#cómo-funciona-el-arnés">Cómo funciona</a> •
+  <a href="#instrucciones-para-el-agente-de-ia-agent-onboarding-protocol">Setup para Agentes</a> •
+  <a href="#comandos-de-la-cli">Comandos CLI</a> •
+  <a href="#organización-del-cerebro-docsbrain">Estructura</a>
+</p>
+
+---
+
+> [!IMPORTANT]
+> ### ¿Eres un Agente de IA (Antigravity, Claude Code, Cursor, Codex)?
+> **Salta directamente a las [Instrucciones de Onboarding para Agentes](#instrucciones-para-el-agente-de-ia-agent-onboarding-protocol)** para inicializar este proyecto sin perderte en la documentación de diseño para humanos.
+
+---
+
+## ¿Por qué Compass Harness?
+
+Programar con agentes en proyectos reales suele traer los mismos problemas: **olvidan decisiones** entre sesiones, **queman tokens** buscando a ciegas por todo el repositorio, **duplican código** que ya existía y sufren de **ceguera de taller** (el mismo agente que programa escribe tests complacientes que confirman sus propios fallos).
+
+**Compass Harness** pone orden en el repositorio con cuatro pilares:
+- **Cerebro permanente (`docs/brain/`)**: El agente sabe qué módulos existen sin rebuscar por todo el código, evitando duplicados y ahorrando tokens.
+- **Flujo por carriles**: Desarrollo formal con especificaciones (**SDD**) para features grandes, y carril rápido (**Fast-Track**) para cambios menores sin ceremonias innecesarias.
+- **Roles separados**: Un orquestador diseña, un constructor rápido pica el código con TDD y un auditor independiente valida el resultado con contexto limpio.
+- **Verificación real (`compass check`)**: Comprobaciones automáticas en terminal para no depender de la palabra del modelo.
+
+---
+
+## Cómo funciona el arnés
+
+### 1. Un cerebro permanente que ahorra tokens y evita duplicados (`docs/brain/`)
+En lugar de dejar que el agente busque a ciegas por todo el repositorio, Compass crea una carpeta de memoria viva (`docs/brain/`) muy ligera y estructurada:
+- **Sabe qué módulos existen sin rebuscar**: En `docs/brain/modules/` hay una ficha por cada capacidad o funcionalidad del sistema. Si le pides añadir algo a la facturación o a los usuarios, el agente va directo a esa ficha en vez de indexar 200 archivos de código.
+- **Evita duplicar código**: Como tiene registradas las partes ya construidas, sabe qué adaptadores, servicios o utilidades ya existen y reutiliza lo que hay en lugar de volver a crearlo en otra carpeta.
+- **Cero saturación de memoria**: Los archivos de arranque tienen límites de tamaño estrictos (como `AGENTS.md` a menos de 100 líneas o `handoff.md` a menos de 30 líneas). El agente solo carga lo imprescindible al empezar y consulta los detalles únicamente cuando la tarea lo requiere.
+
+### 2. Separación de roles: el que programa no se revisa a sí mismo
+Tener a un único modelo potente haciéndolo todo sale caro y acaba acumulando fallos. Compass separa el trabajo en tres roles:
+
+```mermaid
+flowchart LR
+    A["1. Main Agent (Orquestador)\nDiseña la spec y coordina"] --> B["2. Builder Subagent (flash)\nEscribe código y tests (TDD)"]
+    B --> C["3. Auditor Subagent (flash - Contexto limpio)\nRevisa diffs y corre la suite"]
+    C -->|Si detecta fallos| B
+    C -->|Si pasa| D["4. Consolidar memoria y guías"]
+```
+- **Orquestador (Main Agent)**: Usa el modelo potente para entender lo que pides, acordar la arquitectura y redactar la especificación.
+- **Constructor (Builder Subagent)**: Un subagente con modelo rápido y barato (`flash`) que se encarga exclusivamente de picar el código con TDD y pasar los tests (siguiendo el ciclo `RED -> GREEN -> REFACTOR`).
+- **Auditor Independiente (Auditor Subagent)**: Otro subagente rápido que arranca con **contexto limpio** (sin el historial de intentos fallidos del constructor). Su único trabajo es revisar el `git diff`, pasar la suite de tests de forma independiente y emitir un veredicto (`APPROVED` o `REJECTED`). Si encuentra problemas, el orquestador manda corregirlos al constructor antes de dar nada por bueno.
+
+### 3. Comprobaciones reales fuera del LLM (`compass check`)
+No nos fiamos de que el modelo prometa que todo funciona.
+El comando `compass check` es un programa en Python puro (no un prompt). Lo puedes correr tú o integrarlo en tus pipelines y hooks de Git para asegurar que:
+- Los tests han pasado de verdad y se ha guardado la prueba en consola (*Observed Proof*).
+- Los archivos de memoria no se han inflado ni se ha borrado nada esencial.
+- Las tareas marcadas como hechas cumplen los requisitos.
+
+### 4. Flujo por carriles: SDD cuando hace falta y Fast-Track para lo directo
+No todo cambio necesita el mismo nivel de ceremonia:
+- **Carril Rápido (Fast-Track / FTD)**: Para correcciones pequeñas, ajustes en la documentación o cambios puntuales donde no hace falta redactar una especificación completa.
+- **Flujo Formal (SDD - Spec-Driven Development)**: Cuando se va a construir una feature nueva o tocar partes estructurales, el agente sigue un proceso ordenado antes de picar código:
+  1. `specs/<feature>/spec.md`: Se escribe qué se va a construir y los criterios de aceptación.
+  2. `specs/<feature>/plan.md`: Cómo se va a encajar en la arquitectura del proyecto.
+  3. `specs/<feature>/tasks.md`: Lista de tareas pequeñas para avanzar paso a paso.
+  4. **TDD en costuras públicas (*Seams*)**: Con la skill oficial de Matt Pocock (`tdd`), las pruebas verifican la integración real entre módulos y solo se mockea lo estrictamente necesario (APIs externas o límites del sistema).
+
+### 5. Control de diseño UI (sin componentes a medias)
+Si el proyecto toca interfaz gráfica (React, Vue, Tailwind, HTML/CSS), el arnés activa reglas claras para no generar interfaces genéricas de IA:
+- Paleta y tokens definidos en `docs/brain/design.md`.
+- **Regla de los 4 estados obligatorios**: Todo componente visual debe contemplar siempre sus 4 variantes (*cargando*, *vacío*, *error* y *con datos*).
+- Comprobación responsive básica para evitar desbordamientos en móvil (`375px`) y escritorio (`1280px`).
+
+### 6. Modo Mentor: el código también te enseña (`guides/`)
+Al cerrar una funcionalidad cuando pidas el modo mentor, el arnés genera guías didácticas en `guides/<feature>-GUIDE.md` explicando:
+- Cómo se ha diseñado el software y qué patrones se han aplicado.
+- Conceptos y lógica de negocio propios del proyecto, para que tú también aprendas mientras el agente construye.
 
 ---
 
@@ -100,28 +181,29 @@ compass init --path . \
 
 ---
 
-## Arquitectura del Meta-Harness
+## Organización del Cerebro (`docs/brain/`)
 
-### 1. Cerebro de 3 Niveles (`docs/brain/`) — Coste de Arranque $O(1)$
-- **Nivel 1 (Lectura en cada arranque)**:
-  - `AGENTS.md` (< 100 líneas): Router de 3 carriles (`ANSWER`, `FTD`, `SDD`), estrategia de delegación en subagentes (`subagent-fast`, `subagent-inherit`, `single`), **UI / Frontend Gate** y enlaces a las 5 skills.
-  - `docs/brain/index.md`: Mapa de identidad del proyecto, enlaces a Nivel 2, puntero de **1 única línea** a `decisions/index.md` y listado de módulos.
-- **Nivel 2 (Lectura bajo demanda según el carril)**:
-  - `docs/brain/architecture.md`: Leyes de capas y comandos oficiales de verificación (Unit/Integration In-Loop, Static/Lint y E2E/Playwright opcional).
-  - `docs/brain/handoff.md`: Estado vivo del turno actual (máximo 30 líneas, sobrescribible, nunca *append-only*).
-  - `docs/brain/design.md`: Contrato de diseño visual y tokens (creado de forma perezosa *Just-In-Time* solo cuando el proyecto toca UI/Frontend, máximo 80 líneas).
-  - `docs/brain/modules/<modulo>.md`: Fichas técnicas por componente.
-  - `docs/brain/decisions/index.md`: Tabla índice de ADRs.
-- **Nivel 3 (Archivo histórico de decisiones)**:
-  - `docs/brain/decisions/NNNN-titulo.md`: ADRs individuales (solo se abren cuando se evalúa cambiar una decisión previa).
+Para que el agente no tenga que releer todo el repositorio ni sature su memoria, el conocimiento se organiza en archivos muy directos:
 
-### 2. Las 5 Skills Instaladas en `.compass/skills/` (con Symlinks Agnósticos)
-`compass init --apply` instala la fuente única de verdad en `.compass/skills/` y crea enlaces simbólicos relativos en `.agents/skills/`, `.claude/skills/` o `.cursor/skills/`:
-1. **`tdd` (Skill oficial de Matt Pocock)**: Incluye `SKILL.md`, `tests.md` y `mocking.md`. Enfocada en probar **Seams** (costuras públicas, cubriendo unitarios e integración entre módulos reales), *Vertical Slices* y hacer mock únicamente en *System Boundaries*.
-2. **`project-architect`**: Negociación de estilo arquitectónico (Hexagonal por defecto pero adaptable) y diagnóstico *Greenfield* vs *Brownfield*.
-3. **`sdd-workflow`**: Flujo formal `spec.md -> plan.md -> tasks.md`, con *Architecture Alignment*, *ADR Gate*, *UI Gate*, *Observed Proof* obligatorio por tarea y ejecución de tests delegada al subagente rápido (`flash` / fast tier).
-4. **`ui-design`**: Gobernanza de UI/Frontend para evitar *AI Slop* y *Zombie UI*. Incluye modo de coherencia *Brownfield*, entrevista de 3 preguntas para *Greenfield* con referencia a `https://ancient-prompt-design-flow.base44.app/`, 4 arquetipos con personalidad (`precision-dark/light`, `warm-editorial`, `telemetry-grid`, `neo-brutalist-craft`) y las 5 leyes duras Anti-Slop (como la ley de los 4 estados: *Loading, Empty, Error, Populated*).
-5. **`mentor-guide`**: Generador bajo demanda de guías educativas en `guides/<slug>-GUIDE.md` combinando la lente de Ingeniería de Software con el Dominio Técnico del proyecto.
+- **[`AGENTS.md`](AGENTS.md)** (< 100 líneas): Router de inicio que lee el agente en cada turno para saber qué carril tomar (`ANSWER`, `FTD`, `SDD`), qué subagentes usar y qué skills tiene instaladas.
+- **[`docs/brain/index.md`](docs/brain/index.md)**: Mapa general del proyecto para saber qué módulos existen sin rebuscar por todo el código.
+- **[`docs/brain/architecture.md`](docs/brain/architecture.md)**: Reglas de arquitectura pactadas y comandos oficiales de testing.
+- **[`docs/brain/handoff.md`](docs/brain/handoff.md)**: Estado del turno actual y siguiente paso inmediato (< 30 líneas, se sobrescribe en cada sesión).
+- **[`docs/brain/design.md`](docs/brain/design.md)**: Contrato de tokens visuales y tipografía si el proyecto toca UI (< 80 líneas).
+- **`docs/brain/modules/<capacidad>.md`**: Fichas técnicas por funcionalidad (corte vertical) para no duplicar código ni buscar a ciegas.
+- **`docs/brain/decisions/`**: Registro de decisiones técnicas importantes (ADRs) para no cambiar de opinión a mitad del desarrollo.
+
+---
+
+## Skills Instaladas en `.compass/skills/`
+
+`compass init --apply` instala la fuente única de verdad en `.compass/skills/` y crea enlaces simbólicos relativos para el asistente que uses (`.agents/skills/`, `.claude/skills/`, `.cursor/skills/`):
+
+1. **`tdd` (Skill oficial de Matt Pocock)**: Pruebas sobre **Seams** (costuras públicas entre módulos reales), *Vertical Slices* y mocks restringidos a límites con I/O externa (*System Boundaries*).
+2. **`project-architect`**: Diagnóstico *Greenfield* vs *Brownfield* y elección del estilo de arquitectura idóneo para el proyecto.
+3. **`sdd-workflow`**: Flujo ordenado `spec.md -> plan.md -> tasks.md` con *Prueba Observada* y puerta de auditoría independiente.
+4. **`ui-design`**: Gobernanza visual con 4 arquetipos con carácter y las 5 leyes duras para no generar interfaces genéricas.
+5. **`mentor-guide`**: Generador bajo demanda de guías didácticas en `guides/<slug>-GUIDE.md`.
 
 ---
 
@@ -130,19 +212,24 @@ compass init --path . \
 | Comando | Descripción |
 | :--- | :--- |
 | `compass --version` | Muestra la versión instalada de `compass-harness`. |
-| `compass init [--path <dir>]` | Fase 1: Inspecciona el directorio sin tocar el disco (`COMPASS_ONBOARDING_REQUIRED`). |
-| `compass init --preview ...` | Fase 2: Muestra el plan de archivos, conflictos y symlinks sin escribir en disco (`COMPASS_ONBOARDING_PLAN`). |
-| `compass init --apply [--force] ...` | Fase 3: Instala el Cerebro, las 5 skills y los enlaces simbólicos (`COMPASS_ONBOARDING_APPLIED`). |
-| `compass status [--path <dir>]` | Muestra el estado de salud del Cerebro, contrato UI, symlinks y progreso de tareas en `specs/`. |
-| `compass check [--path <dir>]` | Puerta de calidad determinista (verifica presupuestos de líneas, aislamiento de ADRs, validez de symlinks y que toda tarea `[x]` en `specs/*/tasks.md` tenga su bloque de Prueba Observada). |
+| `compass init [--path <dir>]` | **Fase 1**: Inspecciona el directorio sin tocar el disco (`COMPASS_ONBOARDING_REQUIRED`). |
+| `compass init --preview ...` | **Fase 2**: Muestra el plan de instalación y symlinks sin escribir en disco (`COMPASS_ONBOARDING_PLAN`). |
+| `compass init --apply [--force] ...` | **Fase 3**: Instala el Cerebro, las skills y los enlaces simbólicos (`COMPASS_ONBOARDING_APPLIED`). |
+| `compass status [--path <dir>]` | Muestra la salud del Cerebro, contrato UI, symlinks y progreso de tareas en `specs/`. |
+| `compass check [--path <dir>]` | Puerta de calidad determinista (audita presupuestos de líneas, symlinks y Prueba Observada de tests). |
 
 ---
 
 ## Desarrollo Local y Tests
 
 ```bash
+# Entorno virtual y dependencias de desarrollo
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
+
+# Ejecución de tests unitarios y de integración
 .venv/bin/pytest
+
+# Verificación de invariantes del propio arnés (Dogfooding)
 .venv/bin/compass check --path .
 ```
