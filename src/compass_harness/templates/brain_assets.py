@@ -13,7 +13,8 @@ def render_agents_md(config: "ProjectConfig") -> str:
             "Delegacion en Subagentes Ligeros (`subagent-fast`) - Triada de roles:\n"
             "  1. Main Agent (Orquestador / Arquitecto / Mentor): Contexto principal y coordinacion.\n"
             "  2. Builder Subagent (Constructor TDD): Modelo rapido (`flash` / fast tier) para el ciclo RED-GREEN-REFACTOR.\n"
-            "  3. Auditor Subagent (Auditor Adversarial): Modelo rapido (`flash`) con contexto limpio para la puerta de auditoria."
+            "  3. Auditor Subagent (Auditor Adversarial): Estrictamente read-only (`flash` por defecto, `pro` bajo demanda). "
+            "Reporte por severidad y veredicto formal (`APPROVED` | `REQUEST_CHANGES`)."
         )
     elif config.model_strategy == "subagent-inherit":
         strategy_desc = (
@@ -41,7 +42,7 @@ def render_agents_md(config: "ProjectConfig") -> str:
 ## 2. Decisor de Carriles de Ejecucion
 - Carril 1: `ANSWER` - Preguntas de orientacion, explicaciones y diseno conceptual sin edicion de ficheros.
 - Carril 2: `FTD` (Fix-The-Docs) - Correcciones directas en documentacion, arquitectura o handoff sin codigo de produccion.
-- Carril 3: `SDD` (Spec-Driven Development) - Flujo formal en 6 pasos: `spec.md` -> `plan.md` -> `tasks.md` -> `TDD Implementation` (Builder) -> `Independent Audit Gate` (Auditor) -> `Brain Consolidation & Guide` (Main).
+- Carril 3: `SDD` (Spec-Driven Development) - Flujo formal en 6 pasos: `spec.md` -> `plan.md` -> `tasks.md` -> `TDD Implementation` (Builder) -> `Independent Audit Gate` (Auditor read-only: `APPROVED` | `REQUEST_CHANGES`) -> `Brain Consolidation & Guide` (Main).
 
 ---
 

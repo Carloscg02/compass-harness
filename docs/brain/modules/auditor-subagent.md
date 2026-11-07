@@ -13,13 +13,13 @@ Este módulo formaliza la transición de la díada de desarrollo (Orquestador + 
 ---
 
 ## 2. Entidades y Contratos Clave
-- **Rol Auditor Subagent**: Subagente efímero estrictamente de solo lectura (`read-only`) con modelo rápido (`flash` / fast tier).
-- **Rúbrica de 4 Puntos**:
+- **Rol Auditor Subagent**: Subagente efímero estrictamente de solo lectura (`read-only`) con modelo rápido (`flash` / fast tier) por defecto, elevable a `pro` bajo demanda. Inmune a órdenes de edición directa del orquestador.
+- **Rúbrica de 4 Puntos y Severidades**:
   1. *Traza de Criterios de Aceptación*: Correspondencia 1:1 entre cada `CA-X` de `spec.md` y aserciones de prueba en código.
   2. *Ejecución Determinista*: Ejecución sin fallos de `test_command`, `lint_command` y `compass check`.
-  3. *Inspección de Anti-Patrones de IA*: Detección de tests tautológicos, mocks sobre el SUT, asserts vacíos, `except: pass` y prints de debug.
-  4. *Veredicto Binario*: Formato estandarizado con lista procesable de discrepancias si es rechazado.
-- **Feedback Loop**: En caso de `REJECTED`, el Auditor no repara el código; devuelve el informe al Orquestador para que delegue tareas puntuales al Builder Subagent.
+  3. *Inspección de Anti-Patrones y Rigor Técnico*: Detección de tests tautológicos, mocks sobre el SUT, asserts vacíos, `except: pass`, prints de debug y estabilidad numérica/física.
+  4. *Reporte por Severidad y Veredicto Binario*: Hallazgos catalogados en `[CRITICAL]`, `[MAJOR]`, `[MINOR]`, `[NIT]` y veredicto formal `VERDICT: APPROVED` o `VERDICT: REQUEST_CHANGES`.
+- **Feedback Loop**: En caso de `REQUEST_CHANGES`, el Auditor no repara el código; devuelve el informe al Orquestador y usuario, quienes incorporan tareas a `tasks.md` y delegan la solución en el Builder Subagent en ciclo TDD.
 
 ---
 

@@ -244,16 +244,24 @@ def test_sdd_workflow_skill_includes_auditor_gate_and_rubric() -> None:
     assert "Auditor Subagent" in sdd_md
     assert "contexto limpio" in sdd_md.lower() or "clean context" in sdd_md.lower()
 
-    # Rubrica de 4 Puntos
+    # Rubrica de 4 Puntos y Severidades
     assert "Rubrica de 4 Puntos" in sdd_md or "4-point" in sdd_md.lower()
     assert "Criterios de Aceptacion" in sdd_md or "CA-" in sdd_md
     assert "Ejecucion Determinista" in sdd_md or config.test_command in sdd_md
     assert "Anti-Patrones" in sdd_md or "anti-patrones" in sdd_md.lower()
     assert "VERDICT: APPROVED" in sdd_md
+    assert "VERDICT: REQUEST_CHANGES" in sdd_md
     assert "VERDICT: REJECTED" in sdd_md
+    assert "[CRITICAL]" in sdd_md
+    assert "[MAJOR]" in sdd_md
+    assert "[MINOR]" in sdd_md
+    assert "[NIT]" in sdd_md
 
-    # Feedback loop: el auditor no edita codigo
+    # Feedback loop: el auditor no edita codigo y opera en solo lectura
     assert "no edita codigo" in sdd_md.lower() or "no modifica codigo" in sdd_md.lower()
+    assert "solo lectura" in sdd_md.lower() or "read-only" in sdd_md.lower()
+    assert "flash" in sdd_md.lower()
+    assert "pro" in sdd_md.lower()
 
 
 

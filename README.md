@@ -2,8 +2,6 @@
   <img src="docs/assets/Compass-harness-banner-v1.jpg" alt="Compass Harness Banner" width="750">
 </p>
 
-<h1 align="center">Compass Harness</h1>
-
 <p align="center">
   <em>Meta-harness desarrollado en Python para guiar el desarrollo con agentes y mantener el control del proyecto.</em>
 </p>
