@@ -25,10 +25,11 @@
 - **[`modules/verification-check.md`](modules/verification-check.md)** — Auditor determinista en `core/verifier.py` (`verify_harness`) y subcomandos `compass status` y `compass check`.
 - **[`modules/ui-design-governance.md`](modules/ui-design-governance.md)** — Gobernanza de UI/Frontend con activación perezosa (*Just-In-Time UI Gate*), entrevista guiada con catálogo interactivo y arquetipos, 5 leyes Anti-Slop y auditoría de `docs/brain/design.md`.
 - **[`modules/auditor-subagent.md`](modules/auditor-subagent.md)** — Puerta de auditoría independiente en flujo SDD, mitigación de *Builder Blindness*, rúbrica de 4 puntos y feedback loop.
+- **[`modules/harness-updater.md`](modules/harness-updater.md)** — Sincronización determinista de arneses existentes (`compass update`), reconstrucción de configuración e inmutabilidad estricta de la memoria viva.
 
 ---
 
-## 4. Hoja de Ruta v1.1 (Progreso: 7 / 7 — COMPLETADA)
+## 4. Hoja de Ruta v1.2 (Progreso: 8 / 8 — COMPLETADA)
 - [x] **Paso 1 (`01-cli-skeleton`)**: Esqueleto del paquete Python y comando base `compass` ([Spec](../../specs/01-cli-skeleton/spec.md)).
 - [x] **Paso 2 (`02-project-inspector`)**: Detector determinista de contexto Greenfield vs. Brownfield ([Spec](../../specs/02-project-inspector/spec.md)).
 - [x] **Paso 3 (`03-templates-and-skills`)**: Motor de plantillas y las Skills maestras ([Spec](../../specs/03-templates-and-skills/spec.md)).
@@ -36,6 +37,7 @@
 - [x] **Paso 5 (`05-verification-check`)**: Comandos `compass status` y `compass check` (auditoría de Prueba Observada) ([Spec](../../specs/05-verification-check/spec.md)).
 - [x] **Paso 6 (`06-ui-design-governance`)**: Gobernanza de UI/Frontend, skill `ui-design`, entrevista y contrato `design.md` Anti-Slop ([Spec](../../specs/06-ui-design-governance/spec.md)).
 - [x] **Paso 7 (`07-auditor-subagent`)**: Puerta de Auditoría Independiente en Flujo SDD con contexto limpio y modelo rápido ([Spec](../../specs/07-auditor-subagent/spec.md)).
+- [x] **Paso 8 (`08-compass-update`)**: Subcomando `compass update` para sincronización determinista de arneses existentes ([Spec](../../specs/08-compass-update/spec.md)).
 
 ---
 
@@ -48,4 +50,5 @@
 - **[`05-verification-check-GUIDE.md`](../../guides/05-verification-check-GUIDE.md)** — Puertas de calidad deterministas fuera del LLM, expresiones regulares precompiladas (`re.compile`), semántica de códigos de salida (`status` vs `check`) y *dogfooding*.
 - **[`06-ui-design-governance-GUIDE.md`](../../guides/06-ui-design-governance-GUIDE.md)** — Gobernanza de UI/Frontend para desarrolladores backend, patrón *Just-In-Time Design Contract* y las 4 reglas objetivas contra el *AI Slop*.
 - **[`07-auditor-subagent-GUIDE.md`](../../guides/07-auditor-subagent-GUIDE.md)** — El patrón Maker-Checker en ingeniería de arneses, mitigación de sesgos de contexto en subagentes y diseño de rúbricas adversariales para modelos rápidos.
+- **[`08-compass-update-GUIDE.md`](../../guides/08-compass-update-GUIDE.md)** — Sincronización determinista de arneses, segregación Stateless/Stateful y preservación de memoria viva.
 - **[`harness-engineering-audit-rubric.md`](../../guides/harness-engineering-audit-rubric.md)** — Marco de auditoría y checklist de 10 puntos para evaluar harnesses existentes según los estándares de Anthropic, `rsc-harness`, OpenAI y `learn-harness-engineering`.

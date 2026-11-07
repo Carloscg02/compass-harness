@@ -9,6 +9,11 @@ from compass_harness import __version__
 from compass_harness.core.inspector import ProjectState, inspect_project
 from compass_harness.core.installer import apply_installation, plan_installation
 from compass_harness.core.renderer import ProjectConfig
+from compass_harness.core.updater import (
+    apply_update,
+    extract_project_config,
+    plan_update,
+)
 from compass_harness.core.verifier import REQUIRED_BRAIN_FILES, verify_harness
 
 app = typer.Typer(
@@ -17,7 +22,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
-__all__ = ["app", "check", "init", "main", "status", "version_callback"]
+__all__ = ["app", "check", "init", "main", "status", "update", "version_callback"]
 
 console = Console()
 
@@ -266,6 +271,110 @@ def check(
         for issue in report.issues:
             console.print(f"[{issue.code}] {issue.path}: {issue.message}")
         raise typer.Exit(code=1)
+
+
+@app.command("update")
+def update(
+    path: Path = typer.Option(Path("."), "--path", "-p", help="Directorio raiz del proyecto."),
+    preview: bool = typer.Option(False, "--preview", help="Muestra el plan de actualizacion sin escribir en disco."),
+    apply: bool = typer.Option(False, "--apply", help="Aplica la actualizacion en disco."),
+    force: bool = typer.Option(False, "--force", "-f", help="Fuerza la sobreescritura de skills locales."),
+) -> None:
+    """Sincroniza y actualiza deterministamente los activos de infraestructura del arnes Compass."""
+    if preview and apply:
+        console.print("Error: No se pueden especificar --preview y --apply simultaneamente.")
+        raise typer.Exit(code=1)
+
+    root = path.resolve()
+    if not root.exists():
+        console.print(f"Error: El directorio especificado no existe: {root}")
+        raise typer.Exit(code=1)
+    if not root.is_dir():
+        console.print(f"Error: La ruta especificada no es un directorio: {root}")
+        raise typer.Exit(code=1)
+
+    try:
+        config = extract_project_config(root)
+    except FileNotFoundError:
+        console.print("=== COMPASS_NOT_INITIALIZED ===")
+        console.print(f"Error: El directorio '{root}' no esta inicializado con Compass Meta-Harness.")
+        console.print("Ejecuta 'compass init' primero para inicializar el arnes.")
+        raise typer.Exit(code=1)
+
+    # Modo informativo sin flags
+    if not preview and not apply:
+        console.print("=== COMPASS_UPDATE_REQUIRED ===")
+        console.print(f"Proyecto detectado: {config.project_name}")
+        console.print(f"Stack: {config.tech_stack}")
+        console.print(f"Dominio: {config.domain}")
+        console.print(f"Estilo arquitectonico: {config.architecture_style}")
+        console.print(f"Estrategia de modelos: {config.model_strategy}")
+        console.print(f"Asistentes configurados: {', '.join(config.target_assistants)}")
+        console.print("")
+        console.print("Opciones de actualizacion disponibles:")
+        console.print("  1. Previsualizar el plan de actualizacion sin tocar disco:")
+        console.print(f'     compass update --path "{root}" --preview')
+        console.print("  2. Aplicar la actualizacion de activos de infraestructura:")
+        console.print(f'     compass update --path "{root}" --apply')
+        console.print("  3. Forzar sobreescritura de skills modificadas:")
+        console.print(f'     compass update --path "{root}" --apply --force')
+        raise typer.Exit(code=0)
+
+    # Vista previa del plan de actualizacion
+    if preview:
+        plan = plan_update(root, config)
+        console.print("=== COMPASS_UPDATE_PLAN ===")
+        console.print(f"Proyecto: {config.project_name} ({root})")
+        console.print(f"Stack: {config.tech_stack} | Arquitectura: {config.architecture_style}")
+        console.print("")
+        console.print("Archivos de infraestructura a actualizar (Stateless):")
+        for f in plan.files_to_update:
+            console.print(f"  [UPDATE] {f}")
+        console.print("")
+        console.print("Archivos protegidos (Memoria viva inmutable):")
+        for f in plan.preserved_files:
+            console.print(f"  [PRESERVED] {f}")
+        console.print("")
+        console.print("Enlaces simbolicos a verificar/reparar:")
+        for s in plan.symlinks_to_repair:
+            console.print(f"  [SYMLINK] {s.link_path} -> {s.target_path}")
+        console.print("")
+        console.print("Siguiente paso sugerido:")
+        console.print(f'compass update --path "{root}" --apply')
+        raise typer.Exit(code=0)
+
+    # Aplicacion de la actualizacion
+    if apply:
+        result = apply_update(root, config, force=force)
+        console.print("=== COMPASS_UPDATE_APPLIED ===")
+        console.print(f"Proyecto actualizado con exito en: {root}")
+        if result.updated_files:
+            console.print("Archivos actualizados:")
+            for f in result.updated_files:
+                console.print(f"  [UPDATED] {f}")
+        if result.skipped_files:
+            console.print("Archivos omitidos por estar al dia:")
+            for f in result.skipped_files:
+                console.print(f"  [SKIPPED] {f}")
+        if result.repaired_symlinks:
+            console.print("Enlaces simbolicos verificados/reparados:")
+            for s in result.repaired_symlinks:
+                console.print(f"  [SYMLINK] {s}")
+        console.print(f"Archivos de memoria viva protegidos intactos: {len(result.preserved_files)} archivos")
+        console.print("Configuracion sincronizada en: .compass/config.json")
+        console.print("")
+        console.print("Resumen de salud del arnes (verify_harness):")
+        report = verify_harness(root)
+        if report.passed:
+            console.print("  Estado general: HEALTHY")
+            console.print(f"  Archivos del Cerebro: {len(report.present_brain_files)}/{len(REQUIRED_BRAIN_FILES)} presentes")
+            console.print(f"  Skills instaladas: {', '.join(report.installed_skills)}")
+            console.print(f"  Enlaces simbolicos activos: {len(report.active_symlinks)}")
+        else:
+            console.print("  Estado general: ISSUES_FOUND")
+            for issue in report.issues:
+                console.print(f"  [{issue.code}] {issue.path}: {issue.message}")
+        raise typer.Exit(code=0)
 
 
 if __name__ == "__main__":

@@ -215,6 +215,7 @@ Para que el agente no tenga que releer todo el repositorio ni sature su memoria,
 | `compass init --apply [--force] ...` | **Fase 3**: Instala el Cerebro, las skills y los enlaces simbólicos (`COMPASS_ONBOARDING_APPLIED`). |
 | `compass status [--path <dir>]` | Muestra la salud del Cerebro, contrato UI, symlinks y progreso de tareas en `specs/`. |
 | `compass check [--path <dir>]` | Puerta de calidad determinista (audita presupuestos de líneas, symlinks y Prueba Observada de tests). |
+| `compass update [--path <dir>]` | Sincroniza y actualiza la infraestructura del arnés (skills, router, symlinks) preservando al 100% la memoria viva del proyecto. |
 
 ---
 

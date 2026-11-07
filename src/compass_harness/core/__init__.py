@@ -16,6 +16,14 @@ from compass_harness.core.renderer import (
     ProjectConfig,
     render_project_bundle,
 )
+from compass_harness.core.updater import (
+    UpdatePlan,
+    UpdateResult,
+    apply_update,
+    extract_project_config,
+    plan_update,
+    save_project_config,
+)
 from compass_harness.core.verifier import (
     CheckIssue,
     HarnessReport,
@@ -33,9 +41,15 @@ __all__ = [
     "ProjectState",
     "SpecProgress",
     "SymlinkSpec",
+    "UpdatePlan",
+    "UpdateResult",
     "apply_installation",
+    "apply_update",
+    "extract_project_config",
     "inspect_project",
     "plan_installation",
+    "plan_update",
     "render_project_bundle",
+    "save_project_config",
     "verify_harness",
 ]
